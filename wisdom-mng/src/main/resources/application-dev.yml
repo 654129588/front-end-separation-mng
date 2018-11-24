@@ -1,0 +1,43 @@
+server:
+  #监听端口号
+  port: 8888
+  #用户会话session过期时间，以秒为单位
+  session-timeout: 7200
+  #静态资源压缩
+  compression:
+    enabled: true
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/javascript,image/jpeg,image/png
+
+spring:
+  #数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/wisdom_2.0?useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+  #AOP
+  aop:
+    auto: true
+  #热更新
+  devtools:
+    restart:
+      enabled: true
+    additional-paths: wisdom-mng/src/main
+  #JPA
+  #表结构：update自动更新，none不采取措施
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  #让控制器输出的json字符格式更美观
+  jackson:
+    serialization:
+      indent-output: true
+  #上传文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 5Mb
+#输出日志级别
+logging:
+  level:
+    org.springframework.web: DEBUG
