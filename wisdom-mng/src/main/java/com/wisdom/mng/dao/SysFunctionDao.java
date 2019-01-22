@@ -19,4 +19,5 @@ public interface SysFunctionDao extends CustomRepository<SysFunction,Long>{
     void update(Long id, String functionName, Integer functionLevel, String functionUrl, Integer orders, Long parentId);
 
     List<SysFunction> findAllByParentIdOrderByOrders(Long parentId);
+
 }

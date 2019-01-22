@@ -21,7 +21,7 @@ public class SysFunctionService {
     SysFunctionDao sysFunctionDao;
 
     /**
-     * 查出一二级菜单
+     * 查出用户一二级菜单权限，按钮权限
      * @param sysUserId
      * @return
      */
@@ -31,6 +31,19 @@ public class SysFunctionService {
             List<SysFunction> twoFunctions = sysFunctionDao.withSysUserIdAndParentIdQuery(sysUserId, oneFunction.getId());
             for (SysFunction twoFunction : twoFunctions) {
                 List<SysFunction> threeFunctions = sysFunctionDao.withSysUserIdAndParentIdQuery(sysUserId, twoFunction.getId());
+                twoFunction.setChildSysFunction(threeFunctions);
+            }
+            oneFunction.setChildSysFunction(twoFunctions);
+        }
+        return oneFunctions;
+    }
+
+    public List<SysFunction> getAllMenu(){
+        List<SysFunction> oneFunctions = sysFunctionDao.findAllByParentIdOrderByOrders((long) 0);
+        for (SysFunction oneFunction:oneFunctions) {
+            List<SysFunction> twoFunctions = sysFunctionDao.findAllByParentIdOrderByOrders(oneFunction.getId());
+            for (SysFunction twoFunction : twoFunctions) {
+                List<SysFunction> threeFunctions = sysFunctionDao.findAllByParentIdOrderByOrders(twoFunction.getId());
                 twoFunction.setChildSysFunction(threeFunctions);
             }
             oneFunction.setChildSysFunction(twoFunctions);

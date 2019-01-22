@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -39,13 +40,14 @@ public class Swagger2 extends WebMvcConfigurerAdapter {
                         .select()
                         .apis(RequestHandlerSelectors.basePackage("com.wisdom.mng.controller"))
                          .paths(PathSelectors.any())
-                         .build();
+                         .build()
+                         .ignoredParameterTypes(ApiIgnore.class);
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("wisdom 2.0")
-                .description("wisdom 2.0 后台API文档")
+                .title("wisdom 官网")
+                .description("wisdom 官网 后台API文档")
                 .termsOfServiceUrl("http://localhost:8888/swagger-ui.html")
                 .contact("陈伟聪")
                 .version("1.0")

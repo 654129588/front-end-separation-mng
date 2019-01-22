@@ -11,7 +11,7 @@ server:
 spring:
   #数据库配置
   datasource:
-    url: jdbc:mysql://14.18.43.48:3306/wisdom_eye?useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true
+    url: jdbc:mysql://14.18.43.48:3306/wisdom_www?useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true
     username: root
     password: KHwl20170731!@#
     driver-class-name: com.mysql.jdbc.Driver
@@ -21,7 +21,7 @@ spring:
   #热更新
   devtools:
     restart:
-      enabled: true
+      enabled: false
     additional-paths: wisdom-mng/src/main
   #JPA
   #表结构：update自动更新，none不采取措施
@@ -41,3 +41,9 @@ spring:
 logging:
   level:
     org.springframework.web: DEBUG
+#配置参数
+upload:
+  url: /uploads/
+  file:
+    path: /data/www/
+    basedir: /data/tmp

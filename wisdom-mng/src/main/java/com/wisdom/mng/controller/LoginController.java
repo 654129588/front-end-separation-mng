@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @desc chenweicong
  */
 @RestController
-@CrossOrigin(origins = "*")
 @Api(value="登录接口")
 public class LoginController {
 

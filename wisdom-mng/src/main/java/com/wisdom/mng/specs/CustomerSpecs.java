@@ -13,7 +13,10 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.SingularAttribute;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.toArray;
@@ -50,7 +53,7 @@ public class CustomerSpecs {
                      * 6.获得实体类对象某一个属性的值
                      */
                     Object attrValue = getValue(example, attr);
-
+                    System.out.println("JPA自动装配:"+example.toString()+"---"+attr.getName());
                     if(attrValue != null){
                         /**
                          * 7.当前属性值为字符类型的时候
@@ -72,6 +75,16 @@ public class CustomerSpecs {
                             predicates.add(cb.equal(root.get(attribute(entity, attr.getName(),attrValue.getClass())),attrValue));
                         }
                     }
+                    if(attr.getJavaType() == Date.class){
+                        Object startDate = getValue(example,"start"+attr.getName());
+                        Object endDate = getValue(example,"end"+attr.getName());
+                        if(startDate != null){
+                            predicates.add(cb.greaterThanOrEqualTo(root.get(attribute(entity, attr.getName(),Date.class)),(Date)startDate));
+                        }
+                        if(endDate != null){
+                            predicates.add(cb.lessThanOrEqualTo(root.get(attribute(entity, attr.getName(),Date.class)),(Date)endDate));
+                        }
+                    }
                 }
                 /**
                  * 11.将条件列表转换成Predicate
@@ -85,6 +98,19 @@ public class CustomerSpecs {
                 Field field = null;
                 try {
                     field = example.getClass().getDeclaredField(attr.getName());
+                    //设置对象的访问权限，保证对private的属性的访问
+                    field.setAccessible(true);
+                    return ReflectionUtils.getField(field,example);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            private <T> Object getValue(T example, String name){
+                Field field = null;
+                try {
+                    field = example.getClass().getDeclaredField(name);
                     //设置对象的访问权限，保证对private的属性的访问
                     field.setAccessible(true);
                     return ReflectionUtils.getField(field,example);

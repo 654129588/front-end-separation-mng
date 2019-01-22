@@ -40,7 +40,8 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
         List<SysFunction> allMenu = sysFunctionDao.findAll();
         for (SysFunction menu : allMenu) {
             menu.setSysRoles(sysRoleDao.findSysRoleByFunctionId(menu.getId()));
-            if (antPathMatcher.match(menu.getFunctionUrl(), requestUrl)&&menu.getSysRoles().size()>0) {
+            if (antPathMatcher.match(menu.getFunctionUrl(), requestUrl)
+                    &&menu.getSysRoles().size()>0) {
                 List<SysRole> roles = menu.getSysRoles();
                 int size = roles.size();
                 String[] values = new String[size];

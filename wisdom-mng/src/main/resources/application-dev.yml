@@ -1,43 +1,49 @@
 server:
-  #¼àÌı¶Ë¿ÚºÅ
+  #ç›‘å¬ç«¯å£å·
   port: 8888
-  #ÓÃ»§»á»°session¹ıÆÚÊ±¼ä£¬ÒÔÃëÎªµ¥Î»
+  #ç”¨æˆ·ä¼šè¯sessionè¿‡æœŸæ—¶é—´ï¼Œä»¥ç§’ä¸ºå•ä½
   session-timeout: 7200
-  #¾²Ì¬×ÊÔ´Ñ¹Ëõ
+  #é™æ€èµ„æºå‹ç¼©
   compression:
     enabled: true
     mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/javascript,image/jpeg,image/png
 
 spring:
-  #Êı¾İ¿âÅäÖÃ
+  #æ•°æ®åº“é…ç½®
   datasource:
-    url: jdbc:mysql://localhost:3306/wisdom_2.0?useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true
+    url: jdbc:mysql://14.18.43.48:3306/wisdom_www?useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true
     username: root
-    password: 123456
+    password: KHwl20170731!@#
     driver-class-name: com.mysql.jdbc.Driver
   #AOP
   aop:
     auto: true
-  #ÈÈ¸üĞÂ
+  #çƒ­æ›´æ–°
   devtools:
     restart:
       enabled: true
     additional-paths: wisdom-mng/src/main
   #JPA
-  #±í½á¹¹£ºupdate×Ô¶¯¸üĞÂ£¬none²»²ÉÈ¡´ëÊ©
+  #è¡¨ç»“æ„ï¼šupdateè‡ªåŠ¨æ›´æ–°ï¼Œnoneä¸é‡‡å–æªæ–½
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-  #ÈÃ¿ØÖÆÆ÷Êä³öµÄjson×Ö·û¸ñÊ½¸üÃÀ¹Û
+  #è®©æ§åˆ¶å™¨è¾“å‡ºçš„jsonå­—ç¬¦æ ¼å¼æ›´ç¾è§‚
   jackson:
     serialization:
       indent-output: true
-  #ÉÏ´«ÎÄ¼ş´óĞ¡ÏŞÖÆ
+  #ä¸Šä¼ æ–‡ä»¶å¤§å°é™åˆ¶
   servlet:
     multipart:
       max-file-size: 5Mb
-#Êä³öÈÕÖ¾¼¶±ğ
+#è¾“å‡ºæ—¥å¿—çº§åˆ«
 logging:
   level:
     org.springframework.web: DEBUG
+#é…ç½®å‚æ•°
+upload:
+  url: /uploads/
+  file:
+    path: C:/Users/admin/Desktop/www/
+    basedir: C:/Users/admin/Desktop/www

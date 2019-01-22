@@ -39,7 +39,7 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
             //当前请求需要的权限
             String needRole = ca.getAttribute();
             System.out.println(needRole);
-            if ("ROLE_LOGIN".equals(needRole)) {
+            if ("ROLE_LOGIN".equals(needRole) || authentication.getPrincipal().equals("anonymousUser")) {
                 if (authentication instanceof AnonymousAuthenticationToken) {
                     throw new BadCredentialsException("未登录");
                 }
@@ -52,7 +52,12 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
                 }
             }
             SysUser sysUser = (SysUser) authentication.getPrincipal();
+
             List<SysRole> roles = sysUser.getRoles();
+            //登陆后指定可访问路径过滤
+            if(requestUrl.equals("/system/function/getFunctionInfo")){
+                return;
+            }
             //判断是否存在访问权限
             for (SysRole role: roles) {
                 for (SysFunction function: role.getFunctions()) {

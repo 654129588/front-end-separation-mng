@@ -25,8 +25,15 @@ public class SysUser implements UserDetails {
     @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     private List<SysRole> roles;
 
-  public Long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public SysUser(Long id){
+        this.id = id;
+    }
+
+    public SysUser(){
     }
 
     public void setId(Long id) {
@@ -48,6 +55,8 @@ public class SysUser implements UserDetails {
     public void setRoles(List<SysRole> roles) {
         this.roles = roles;
     }
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
