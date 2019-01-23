@@ -16,7 +16,7 @@ public class PageModel {
     private Integer pageIndex;
 
     @NotNull(message = "当前页请求个数不能为空")
-    @DecimalMin(value = "10",message = "页请求个数不能少于{value}")
+    @DecimalMin(value = "0",message = "页请求个数不能少于{value}")
     @ApiModelProperty(value = "请求个数")
     private Integer PageSize;
 

@@ -49,7 +49,7 @@ public class Swagger2 extends WebMvcConfigurerAdapter {
                 .title("wisdom 官网")
                 .description("wisdom 官网 后台API文档")
                 .termsOfServiceUrl("http://localhost:8888/swagger-ui.html")
-                .contact("陈伟聪")
+                .contact("CHENWEICONG")
                 .version("1.0")
                 .build();
         }

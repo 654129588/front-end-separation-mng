@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /***
  * @author CHENWEICONG
@@ -60,7 +61,7 @@ public class CategoryService {
                     category.setLogo(env.getProperty("upload.url")+filename);
                 }
             }
-            if(category.getId() == null && category.getCategoryLevel() == 1){
+            if(category.getId() == null && category.getParentId() == 0){
                 return;
             }
             categoryDao.saveAndFlush(category);
@@ -72,7 +73,9 @@ public class CategoryService {
     @Transactional
     public void delete(List<Long> ids) {
         for (Long id:ids) {
-            categoryDao.deleteById(id);
+            Category category = categoryDao.getOne(id);
+            if(category.getParentId() != 0)
+                categoryDao.deleteById(id);
         }
     }
 }
