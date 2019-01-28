@@ -1,9 +1,11 @@
 package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.CategoryDao;
+import com.wisdom.mng.entity.Banner;
 import com.wisdom.mng.entity.Category;
 import com.wisdom.mng.entity.SysFunction;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +67,10 @@ public class CategoryService {
             if(category.getId() == null && category.getParentId() == 0){
                 return;
             }
+            if(category.getId() != null){
+                Category c = categoryDao.getOne(category.getId());
+                UpdateTool.copyNullProperties(c, category);
+            }
             categoryDao.saveAndFlush(category);
         }catch (Exception e){
             e.printStackTrace();
@@ -77,5 +84,14 @@ public class CategoryService {
             if(category.getParentId() != 0)
                 categoryDao.deleteById(id);
         }
+    }
+
+    public List<Category> findAllByIdentificationInOrderByOrdersAsc(String identification) {
+        List<Category> parentCategorys= categoryDao.findAllByIdentificationInOrderByOrdersAsc(identification);
+        List<Category> childCategorys = new ArrayList<>();
+        for (Category category: parentCategorys) {
+            childCategorys = categoryDao.findAllByParentIdOrderByOrdersAsc(category.getId());
+        }
+        return childCategorys;
     }
 }

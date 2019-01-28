@@ -2,9 +2,10 @@ package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.ArticleDao;
 import com.wisdom.mng.dao.WisdomLifeDao;
-import com.wisdom.mng.entity.SysUser;
-import com.wisdom.mng.entity.WisdomLife;
+import com.wisdom.mng.entity.*;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.ResultUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import com.wisdom.mng.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,9 @@ public class WidomLifeService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("banner")){
+                    if(key.equals("uploadBanner")){
                         banner += env.getProperty("upload.url")+filename+",";
-                    }else if(key.equals("file")){
+                    }else if(key.equals("uploadFile")){
                         files += env.getProperty("upload.url")+filename+",";
                     }
                 }
@@ -63,12 +64,15 @@ public class WidomLifeService {
                 wisdomLife.setFile(files);
             }
             if(wisdomLife.getId() == null){
+                wisdomLife.setPostStatus((short) 0);
+                wisdomLife.setPushStatus((short) 0);
                 wisdomLife.setCreateDate(new Date());
                 wisdomLife.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
-            }
-            if(wisdomLife.getPostStatus() == 1){
-                wisdomLife.setPostDate(new Date());
-                wisdomLife.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            }else{
+                WisdomLife w = wisdomLifeDao.getOne(wisdomLife.getId());
+                wisdomLife.setPostStatus(w.getPostStatus());
+                wisdomLife.setPushStatus(w.getPushStatus());
+                UpdateTool.copyNullProperties(w, wisdomLife);
             }
             wisdomLifeDao.saveAndFlush(wisdomLife);
         }catch (Exception e){
@@ -83,4 +87,27 @@ public class WidomLifeService {
         }
     }
 
+    @Transactional
+    public Result post(Short postStatus, Long wisdomLifeId) {
+        WisdomLife wisdomLife = wisdomLifeDao.getOne(wisdomLifeId);
+        if(postStatus == 1){
+            Category category = wisdomLife.getCategory();
+            if(category == null){
+                return ResultUtils.DATA("该文章未选择栏目",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            List<WisdomLife> byPostStatus = wisdomLifeDao.findByPostStatusAndCategory(postStatus,category);
+            if(byPostStatus != null && byPostStatus.size() > 0){
+                return ResultUtils.DATA(category.getName()+"栏目只能发布一篇文章",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            wisdomLife.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            wisdomLife.setPostDate(new Date());
+        }
+        wisdomLife.setPostStatus(postStatus);
+        wisdomLifeDao.saveAndFlush(wisdomLife);
+        return ResultUtils.SUCCESS();
+    }
+
+    public List<WisdomLife> findAllByAuto(WisdomLife wisdomLife) {
+        return wisdomLifeDao.findAllByAuto(wisdomLife);
+    }
 }

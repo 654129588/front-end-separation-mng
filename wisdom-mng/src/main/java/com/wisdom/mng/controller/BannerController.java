@@ -57,8 +57,7 @@ public class BannerController {
             @ApiImplicitParam(name = "id", value = "id", required = true, dataType = "Long"),
             @ApiImplicitParam(name = "url", value = "图片链接", required = true, dataType = "String"),
             @ApiImplicitParam(name = "orders", value = "图片排序", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "banner", value = "图片", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "图片", required = true, dataType = "File")
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, Banner banner) throws Exception{
         bannerService.saveOrUpdate(multipartRequest,banner);
@@ -79,4 +78,13 @@ public class BannerController {
         return ResultUtils.SUCCESS();
     }
 
+    @PostMapping("/post")
+    @ApiOperation("发布轮播图")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bannerId", value = "轮播图id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long bannerId){
+        return bannerService.post(postStatus,bannerId);
+    }
 }

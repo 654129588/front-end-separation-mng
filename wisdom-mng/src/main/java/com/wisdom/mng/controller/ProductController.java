@@ -40,7 +40,6 @@ public class ProductController {
             @ApiImplicitParam(name = "pageIndex", value = "列表当前数", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "列表请求个数", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "title", value = "文章标题", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "startpostDate", value = "发布开始时间区间", required = true, dataType = "Date"),
             @ApiImplicitParam(name = "endpostDate", value = "发布结束时间区间", required = true, dataType = "Date"),
             @ApiImplicitParam(name = "startcreateDate", value = "创建开始时间区间", required = true, dataType = "Date"),
@@ -60,17 +59,17 @@ public class ProductController {
             @ApiImplicitParam(name = "excerpt", value = "产品摘要", required = true, dataType = "String"),
             @ApiImplicitParam(name = "content", value = "产品内容", required = true, dataType = "String"),
             @ApiImplicitParam(name = "url", value = "产品链接", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "banner", value = "产品缩略图", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "产品缩略图", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadMachine", value = "产品机器图", required = true, dataType = "File")
+
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, Product product, Long categoryId) throws Exception{
-        if(categoryId == null){
-            return ResultUtils.ERROR();
+        if(categoryId != null){
+            Category category = new Category();
+            category.setId(categoryId);
+            product.setCategory(category);
         }
-        Category category = new Category();
-        category.setId(categoryId);
-        product.setCategory(category);
         productService.saveOrUpdate(multipartRequest,product);
         return ResultUtils.SUCCESS();
     }
@@ -87,5 +86,25 @@ public class ProductController {
         }
         productService.delete(ids);
         return ResultUtils.SUCCESS();
+    }
+
+    @PostMapping("/post")
+    @ApiOperation("发布产品文章")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productId", value = "产品文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long productId){
+        return productService.post(postStatus,productId);
+    }
+
+    @PostMapping("/push")
+    @ApiOperation("产品文章推送首页")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productId", value = "产品文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "pushStatus", value = "推送首页", required = true, dataType = "Integer")
+    })
+    public Result push(Short pushStatus,Long productId){
+        return productService.push(pushStatus,productId);
     }
 }

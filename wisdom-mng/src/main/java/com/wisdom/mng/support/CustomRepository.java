@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
+import java.util.List;
 
 @NoRepositoryBean
 public interface CustomRepository<T, ID extends Serializable> extends JpaRepository<T, ID> ,JpaSpecificationExecutor<T> {
 
     Page<T> findByAuto(T example, Pageable pageable);
+
+    List<T> findAllByAuto(T example);
 
 }

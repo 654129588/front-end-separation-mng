@@ -2,6 +2,8 @@ package com.wisdom.mng.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,7 +25,12 @@ public class Product {
     private String title;//产品标题
 
     @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @NotFound(action= NotFoundAction.IGNORE)
     private Category category;//产品栏目
+
+    @Column(name="push_status")
+    @ApiModelProperty(value = "推送首页")
+    private Short pushStatus;//推送首页
 
     @Column(name="excerpt")
     @ApiModelProperty(value = "摘要")
@@ -41,9 +48,13 @@ public class Product {
     @ApiModelProperty(value = "缩略图")
     private String banner;//缩略图
 
+    @Column(name="machine")
+    @ApiModelProperty(value = "机器图")
+    private String machine;//机器图
+
     @Column(name="post_status")
     @ApiModelProperty(value = "发布状态")
-    private Short postStatus = 0;//发布状态
+    private Short postStatus;//发布状态
 
     @Column(name="post_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -205,5 +216,21 @@ public class Product {
 
     public void setEndcreateDate(Date endcreateDate) {
         this.endcreateDate = endcreateDate;
+    }
+
+    public Short getPushStatus() {
+        return pushStatus;
+    }
+
+    public void setPushStatus(Short pushStatus) {
+        this.pushStatus = pushStatus;
+    }
+
+    public String getMachine() {
+        return machine;
+    }
+
+    public void setMachine(String machine) {
+        this.machine = machine;
     }
 }

@@ -59,18 +59,16 @@ public class ProjectController {
             @ApiImplicitParam(name = "title", value = "项目标题", required = true, dataType = "String"),
             @ApiImplicitParam(name = "excerpt", value = "项目摘要", required = true, dataType = "String"),
             @ApiImplicitParam(name = "content", value = "项目内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "banner", value = "项目缩略图", required = true, dataType = "File"),
-            @ApiImplicitParam(name = "file", value = "项目附件", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "项目缩略图", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadFile", value = "项目附件", required = true, dataType = "File")
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, Project project, Long categoryId) throws Exception{
-        if(categoryId == null){
-            return ResultUtils.ERROR();
+        if(categoryId != null){
+            Category category = new Category();
+            category.setId(categoryId);
+            project.setCategory(category);
         }
-        Category category = new Category();
-        category.setId(categoryId);
-        project.setCategory(category);
         projectService.saveOrUpdate(multipartRequest,project);
         return ResultUtils.SUCCESS();
     }
@@ -87,5 +85,15 @@ public class ProjectController {
         }
         projectService.delete(ids);
         return ResultUtils.SUCCESS();
+    }
+
+    @PostMapping("/post")
+    @ApiOperation("发布项目管理文章")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "projectId", value = "项目管理文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long projectId){
+        return projectService.post(postStatus,projectId);
     }
 }

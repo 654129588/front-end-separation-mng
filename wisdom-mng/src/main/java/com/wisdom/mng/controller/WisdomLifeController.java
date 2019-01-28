@@ -30,7 +30,7 @@ import java.util.List;
  * @desc
  */
 @RestController
-@RequestMapping("widomLife")
+@RequestMapping("wisdomLife")
 @Api(value="智慧生活文章管理接口")
 public class WisdomLifeController {
     @Autowired
@@ -61,18 +61,16 @@ public class WisdomLifeController {
             @ApiImplicitParam(name = "title", value = "文章标题", required = true, dataType = "String"),
             @ApiImplicitParam(name = "excerpt", value = "文章摘要", required = true, dataType = "String"),
             @ApiImplicitParam(name = "content", value = "文章内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "banner", value = "文章缩略图", required = true, dataType = "File"),
-            @ApiImplicitParam(name = "file", value = "文章附件", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "文章缩略图", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadFile", value = "文章附件", required = true, dataType = "File")
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, WisdomLife wisdomLife, Long categoryId) throws Exception{
-        if(categoryId == null){
-            return ResultUtils.ERROR();
+        if(categoryId != null){
+            Category category = new Category();
+            category.setId(categoryId);
+            wisdomLife.setCategory(category);
         }
-        Category category = new Category();
-        category.setId(categoryId);
-        wisdomLife.setCategory(category);
         widomLifeService.saveOrUpdate(multipartRequest,wisdomLife);
         return ResultUtils.SUCCESS();
     }
@@ -89,6 +87,16 @@ public class WisdomLifeController {
         }
         widomLifeService.delete(ids);
         return ResultUtils.SUCCESS();
+    }
+
+    @PostMapping("/post")
+    @ApiOperation("发布智慧生活文章")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "wisdomLifeId", value = "智慧生活文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long wisdomLifeId){
+        return widomLifeService.post(postStatus,wisdomLifeId);
     }
 
 }

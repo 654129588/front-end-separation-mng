@@ -53,7 +53,6 @@ public class CustomerSpecs {
                      * 6.获得实体类对象某一个属性的值
                      */
                     Object attrValue = getValue(example, attr);
-                    System.out.println("JPA自动装配:"+example.toString()+"---"+attr.getName());
                     if(attrValue != null){
                         /**
                          * 7.当前属性值为字符类型的时候

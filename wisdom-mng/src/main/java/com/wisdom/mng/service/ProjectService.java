@@ -2,10 +2,10 @@ package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.ArticleDao;
 import com.wisdom.mng.dao.ProjectDao;
-import com.wisdom.mng.entity.Article;
-import com.wisdom.mng.entity.Project;
-import com.wisdom.mng.entity.SysUser;
+import com.wisdom.mng.entity.*;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.ResultUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import com.wisdom.mng.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +50,9 @@ public class ProjectService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("banner")){
+                    if(key.equals("uploadBanner")){
                         banner += env.getProperty("upload.url")+filename+",";
-                    }else if(key.equals("file")){
+                    }else if(key.equals("uploadFile")){
                         files += env.getProperty("upload.url")+filename+",";
                     }
                 }
@@ -64,12 +64,15 @@ public class ProjectService {
                 project.setFile(files);
             }
             if(project.getId() == null){
+                project.setPostStatus((short) 0);
+                project.setPushStatus((short) 0);
                 project.setCreateDate(new Date());
                 project.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
-            }
-            if(project.getPostStatus() == 1){
-                project.setPostDate(new Date());
-                project.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            }else{
+                Project p = projectDao.getOne(project.getId());
+                project.setPostStatus(p.getPostStatus());
+                project.setPushStatus(p.getPushStatus());
+                UpdateTool.copyNullProperties(p, project);
             }
             projectDao.saveAndFlush(project);
         }catch (Exception e){
@@ -82,5 +85,29 @@ public class ProjectService {
         for (Long id:ids) {
             projectDao.deleteById(id);
         }
+    }
+
+    @Transactional
+    public Result post(Short postStatus, Long projectId) {
+        Project project = projectDao.getOne(projectId);
+        if(postStatus == 1){
+            Category category = project.getCategory();
+            if(category == null){
+                return ResultUtils.DATA("该文章未选择栏目",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            List<Project> byPostStatus = projectDao.findByPostStatusAndCategory(postStatus,category);
+            if(byPostStatus != null && byPostStatus.size() > 0){
+                return ResultUtils.DATA(category.getName()+"栏目只能发布一篇文章",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            project.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            project.setPostDate(new Date());
+        }
+        project.setPostStatus(postStatus);
+        projectDao.saveAndFlush(project);
+        return ResultUtils.SUCCESS();
+    }
+
+    public List<Project> findAllByAuto(Project project) {
+        return projectDao.findAllByAuto(project);
     }
 }

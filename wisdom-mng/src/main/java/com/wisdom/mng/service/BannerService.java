@@ -2,9 +2,10 @@ package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.ArticleDao;
 import com.wisdom.mng.dao.BannerDao;
-import com.wisdom.mng.entity.Banner;
-import com.wisdom.mng.entity.SysUser;
+import com.wisdom.mng.entity.*;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.ResultUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import com.wisdom.mng.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class BannerService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("banner")){
+                    if(key.equals("uploadBanner")){
                         banners += env.getProperty("upload.url")+filename+",";
                     }
                 }
@@ -57,12 +58,13 @@ public class BannerService {
                 banner.setBanner(banners);
             }
             if(banner.getId() == null){
+                banner.setPostStatus((short) 0);
                 banner.setCreateDate(new Date());
                 banner.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
-            }
-            if(banner.getPostStatus() == 1){
-                banner.setPostDate(new Date());
-                banner.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            }else{
+                Banner b = bannerDao.getOne(banner.getId());
+                banner.setPostStatus(b.getPostStatus());
+                UpdateTool.copyNullProperties(b, banner);
             }
             bannerDao.saveAndFlush(banner);
         }catch (Exception e){
@@ -77,4 +79,23 @@ public class BannerService {
         }
     }
 
+    @Transactional
+    public Result post(Short postStatus, Long bannerId) {
+        Banner banner = bannerDao.getOne(bannerId);
+        if(postStatus == 1){
+            List<Banner> byPostStatus = bannerDao.findByPostStatus(postStatus);
+            if(byPostStatus != null && byPostStatus.size() >= 5){
+                return ResultUtils.DATA("只能发布五张轮播图",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            banner.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            banner.setPostDate(new Date());
+        }
+        banner.setPostStatus(postStatus);
+        bannerDao.saveAndFlush(banner);
+        return ResultUtils.SUCCESS();
+    }
+
+    public List<Banner> findByPostStatus(Short postStatus){
+        return bannerDao.findByPostStatus(postStatus);
+    }
 }

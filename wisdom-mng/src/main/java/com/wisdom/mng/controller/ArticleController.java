@@ -8,6 +8,7 @@ import com.wisdom.mng.entity.Result;
 import com.wisdom.mng.service.ArticleService;
 import com.wisdom.mng.utils.ResultUtils;
 import io.swagger.annotations.*;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,18 +61,16 @@ public class ArticleController {
             @ApiImplicitParam(name = "title", value = "新闻标题", required = true, dataType = "String"),
             @ApiImplicitParam(name = "excerpt", value = "新闻摘要", required = true, dataType = "String"),
             @ApiImplicitParam(name = "content", value = "新闻内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "banner", value = "新闻缩略图", required = true, dataType = "File"),
-            @ApiImplicitParam(name = "file", value = "新闻附件", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "新闻缩略图", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadFile", value = "新闻附件", required = true, dataType = "File")
     })
-    public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest,Article article,Long categoryId) throws Exception{
-        if(categoryId == null){
-            return ResultUtils.ERROR();
+    public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest,Article article,Long categoryId){
+        if(categoryId != null){
+            Category category = new Category();
+            category.setId(categoryId);
+            article.setCategory(category);
         }
-        Category category = new Category();
-        category.setId(categoryId);
-        article.setCategory(category);
         articleService.saveOrUpdate(multipartRequest,article);
         return ResultUtils.SUCCESS();
     }
@@ -88,5 +87,15 @@ public class ArticleController {
         }
         articleService.delete(ids);
         return ResultUtils.SUCCESS();
+    }
+
+    @PostMapping("/post")
+    @ApiOperation("发布新闻文章")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "articleId", value = "新闻文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long articleId){
+        return articleService.post(postStatus,articleId);
     }
 }

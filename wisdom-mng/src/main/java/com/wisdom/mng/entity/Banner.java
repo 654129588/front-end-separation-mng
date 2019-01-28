@@ -32,7 +32,7 @@ public class Banner {
 
     @Column(name="post_status")
     @ApiModelProperty(value = "发布状态")
-    private Short postStatus = 0;//发布状态
+    private Short postStatus;//发布状态
 
     @Column(name="post_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -171,4 +171,5 @@ public class Banner {
     public void setEndcreateDate(Date endcreateDate) {
         this.endcreateDate = endcreateDate;
     }
+
 }

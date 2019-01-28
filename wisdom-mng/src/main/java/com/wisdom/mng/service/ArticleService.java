@@ -1,9 +1,10 @@
 package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.ArticleDao;
-import com.wisdom.mng.entity.Article;
-import com.wisdom.mng.entity.SysUser;
+import com.wisdom.mng.entity.*;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.ResultUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import com.wisdom.mng.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,9 @@ public class ArticleService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("banner")){
+                    if(key.equals("uploadBanner")){
                         banner += env.getProperty("upload.url")+filename+",";
-                    }else if(key.equals("file")){
+                    }else if(key.equals("uploadFile")){
                         files += env.getProperty("upload.url")+filename+",";
                     }
                 }
@@ -62,12 +63,15 @@ public class ArticleService {
                 article.setFile(files);
             }
             if(article.getId() == null){
+                article.setPostStatus((short) 0);
+                article.setPushStatus((short) 0);
                 article.setCreateDate(new Date());
                 article.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
-            }
-            if(article.getPostStatus() == 1){
-                article.setPostDate(new Date());
-                article.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            }else{
+                Article a = articleDao.getOne(article.getId());
+                article.setPostStatus(a.getPostStatus());
+                article.setPushStatus(a.getPushStatus());
+                UpdateTool.copyNullProperties(a, article);
             }
             articleDao.saveAndFlush(article);
         }catch (Exception e){
@@ -80,5 +84,21 @@ public class ArticleService {
         for (Long id:ids) {
             articleDao.deleteById(id);
         }
+    }
+
+    @Transactional
+    public Result post(Short postStatus, Long articleId) {
+        Article article = articleDao.getOne(articleId);
+        if(postStatus == 1){
+            article.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            article.setPostDate(new Date());
+        }
+        article.setPostStatus(postStatus);
+        articleDao.saveAndFlush(article);
+        return ResultUtils.SUCCESS();
+    }
+
+    public List<Article> findAllByAuto(Article article) {
+        return articleDao.findAllByAuto(article);
     }
 }

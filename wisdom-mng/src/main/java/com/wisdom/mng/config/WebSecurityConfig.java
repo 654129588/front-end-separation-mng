@@ -92,7 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         o.setAccessDecisionManager(urlAccessDecisionManager);
                         return o;
                     }
-                }).and().formLogin().loginPage("/login_p").loginProcessingUrl("/login").usernameParameter("username").passwordParameter("password").permitAll().failureHandler(new AuthenticationFailureHandler() {
+                }).and().logout().logoutSuccessUrl("/loginout").and().formLogin().loginPage("/login_p").loginProcessingUrl("/login").usernameParameter("username").passwordParameter("password").permitAll().failureHandler(new AuthenticationFailureHandler() {
             @Override
             public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
                 httpServletResponse.setContentType("application/json;charset=utf-8");
@@ -131,6 +131,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/**")
                 .antMatchers("/swagger-resources/**")
                 .antMatchers("/configuration/**")
+                .antMatchers("/loginout")
+                .antMatchers("/api/**")
                 .antMatchers(env.getProperty("upload.url")+"**");
     }
 

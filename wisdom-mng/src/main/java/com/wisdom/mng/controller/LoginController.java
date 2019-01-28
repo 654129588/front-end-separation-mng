@@ -29,6 +29,16 @@ public class LoginController {
         return ResultUtils.DATA("请登录后重试",ResultUtils.RESULT_ERROR_CODE,null);
     }
 
+    /**
+     * 退出登录
+     * @return
+     */
+    @RequestMapping("/loginout")
+    @ApiOperation("退出登录")
+    public Result loginout(){
+        return ResultUtils.DATA("您已退出登录",ResultUtils.RESULT_SUCCESS_CODE,null);
+    }
+
 
     @PostMapping("/login")
     @ApiOperation("用户登录")

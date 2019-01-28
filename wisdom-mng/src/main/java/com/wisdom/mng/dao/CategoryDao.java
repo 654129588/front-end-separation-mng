@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CategoryDao extends CustomRepository<Category,Long> {
     List<Category> findAllByParentIdOrderByOrdersAsc(Long parentId);
+
+    List<Category> findAllByIdentificationInOrderByOrdersAsc(String identificationIn);
 }

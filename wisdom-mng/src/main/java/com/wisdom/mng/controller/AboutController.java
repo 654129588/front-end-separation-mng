@@ -58,10 +58,9 @@ public class AboutController {
             @ApiImplicitParam(name = "title", value = "文章标题", required = true, dataType = "String"),
             @ApiImplicitParam(name = "excerpt", value = "文章摘要", required = true, dataType = "String"),
             @ApiImplicitParam(name = "content", value = "文章内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "banner", value = "文章缩略图", required = true, dataType = "File"),
-            @ApiImplicitParam(name = "file", value = "文章附件", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadBanner", value = "文章缩略图", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadFile", value = "文章附件", required = true, dataType = "File")
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, About about, Long categoryId) throws Exception{
         if(categoryId == null){
@@ -77,7 +76,7 @@ public class AboutController {
     @PostMapping("/delete")
     @ApiOperation("删除关于我们文章")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "aboutIds", value = "删除的Ids", required = true, dataType = "String,String..."),
+            @ApiImplicitParam(name = "aboutIds", value = "删除的Ids", required = true, dataType = "String,String...")
     })
     public Result delete(String aboutIds){
         List<Long> ids = new ArrayList<>();
@@ -87,4 +86,25 @@ public class AboutController {
         aboutService.delete(ids);
         return ResultUtils.SUCCESS();
     }
+
+    @PostMapping("/post")
+    @ApiOperation("发布关于我们文章")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "aboutId", value = "关于我们文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "postStatus", value = "发布状态", required = true, dataType = "Integer")
+    })
+    public Result post(Short postStatus,Long aboutId){
+        return aboutService.post(postStatus,aboutId);
+    }
+
+    @PostMapping("/push")
+    @ApiOperation("关于我们文章推送首页")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "aboutId", value = "关于我们文章id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "pushStatus", value = "推送首页", required = true, dataType = "Integer")
+    })
+    public Result push(Short pushStatus,Long aboutId){
+        return aboutService.push(pushStatus,aboutId);
+    }
+
 }

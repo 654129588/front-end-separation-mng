@@ -50,7 +50,7 @@ public class CategoryController {
             @ApiImplicitParam(name = "name", value = "栏目名称", required = true, dataType = "String"),
             @ApiImplicitParam(name = "categoryLevel", value = "栏目级别", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "parentId", value = "父ID", required = true, dataType = "Long"),
-            @ApiImplicitParam(name = "logo", value = "logo", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadLogo", value = "图片", required = true, dataType = "File"),
             @ApiImplicitParam(name = "identification", value = "标识", required = true, dataType = "String"),
             @ApiImplicitParam(name = "orders", value = "排序", required = true, dataType = "Integer")
     })
@@ -86,5 +86,15 @@ public class CategoryController {
     public Result findCategory(Category category,@Valid PageModel pageModel){
         Page<Category> categorys = categoryService.findByAuto(category,PageRequest.of(pageModel.getPageIndex(), pageModel.getPageSize(),new Sort(Sort.Direction.ASC, "orders")));
         return ResultUtils.DATA("栏目列表请求成功",ResultUtils.RESULT_SUCCESS_CODE,categorys);
+    }
+
+    @PostMapping("/getChildCategory")
+    @ApiOperation("标识获取子栏目")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "identification", value = "标识", required = true, dataType = "String")
+    })
+    public Result getChildCategory(String identification){
+        List<Category> categorys = categoryService.findAllByIdentificationInOrderByOrdersAsc(identification);
+        return ResultUtils.DATA("标识获取子栏目请求成功",ResultUtils.RESULT_SUCCESS_CODE,categorys);
     }
 }

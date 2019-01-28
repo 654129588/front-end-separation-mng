@@ -2,10 +2,10 @@ package com.wisdom.mng.service;
 
 import com.wisdom.mng.dao.AboutDao;
 import com.wisdom.mng.dao.ArticleDao;
-import com.wisdom.mng.entity.About;
-import com.wisdom.mng.entity.Article;
-import com.wisdom.mng.entity.SysUser;
+import com.wisdom.mng.entity.*;
 import com.wisdom.mng.utils.IOUtils;
+import com.wisdom.mng.utils.ResultUtils;
+import com.wisdom.mng.utils.UpdateTool;
 import com.wisdom.mng.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +50,9 @@ public class AboutService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("banner")){
+                    if(key.equals("uploadBanner")){
                         banner += env.getProperty("upload.url")+filename+",";
-                    }else if(key.equals("file")){
+                    }else if(key.equals("uploadFile")){
                         files += env.getProperty("upload.url")+filename+",";
                     }
                 }
@@ -64,12 +64,15 @@ public class AboutService {
                 about.setFile(files);
             }
             if(about.getId() == null){
+                about.setPostStatus((short) 0);
+                about.setPushStatus((short) 0);
                 about.setCreateDate(new Date());
                 about.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
-            }
-            if(about.getPostStatus() == 1){
-                about.setPostDate(new Date());
-                about.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            }else{
+                About a = aboutDao.getOne(about.getId());
+                about.setPostStatus(a.getPostStatus());
+                about.setPushStatus(a.getPushStatus());
+                UpdateTool.copyNullProperties(a, about);
             }
             aboutDao.saveAndFlush(about);
         }catch (Exception e){
@@ -82,5 +85,45 @@ public class AboutService {
         for (Long id:ids) {
             aboutDao.deleteById(id);
         }
+    }
+
+    @Transactional
+    public Result post(Short postStatus, Long aboutId) {
+        About about = aboutDao.getOne(aboutId);
+        if(postStatus == 1){
+            Category category = about.getCategory();
+            if(category == null){
+                return ResultUtils.DATA("该文章未选择栏目",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            List<About> byPostStatus = aboutDao.findByPostStatusAndCategory(postStatus,category);
+            if(byPostStatus != null && byPostStatus.size() > 0){
+                return ResultUtils.DATA(category.getName()+"栏目只能发布一篇文章",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+            about.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            about.setPostDate(new Date());
+        }else{
+            about.setPushStatus(postStatus);
+        }
+        about.setPostStatus(postStatus);
+        aboutDao.saveAndFlush(about);
+        return ResultUtils.SUCCESS();
+    }
+
+    @Transactional
+    public Result push(Short pushStatus, Long aboutId) {
+        About about = aboutDao.getOne(aboutId);
+        if(pushStatus == 1){
+            List<About> byPushStatus = aboutDao.findByPushStatus(pushStatus);
+            if(byPushStatus != null && byPushStatus.size() >= 2){
+                return ResultUtils.DATA("本栏目推送首页文章不能超过2篇",ResultUtils.RESULT_ERROR_CODE,null);
+            }
+        }
+        about.setPushStatus(pushStatus);
+        aboutDao.saveAndFlush(about);
+        return ResultUtils.SUCCESS();
+    }
+
+    public List<About> findAllByAuto(About about) {
+        return findAllByAuto(about);
     }
 }
