@@ -43,6 +43,7 @@ public class AboutService {
         try{
             String banner = "";
             String files = "";
+            String video = "";
             for (Iterator<String> it = multipartRequest.getFileNames(); it.hasNext();) {
                 String key = (String) it.next();
                 MultipartFile file = multipartRequest.getFile(key);
@@ -54,6 +55,8 @@ public class AboutService {
                         banner += env.getProperty("upload.url")+filename+",";
                     }else if(key.equals("uploadFile")){
                         files += env.getProperty("upload.url")+filename+",";
+                    }else if(key.equals("uploadVideo")){
+                        video += env.getProperty("upload.url")+filename+",";
                     }
                 }
             }
@@ -64,6 +67,7 @@ public class AboutService {
                 about.setFile(files);
             }
             if(about.getId() == null){
+                about.setVisits(0);
                 about.setPostStatus((short) 0);
                 about.setPushStatus((short) 0);
                 about.setCreateDate(new Date());
@@ -124,6 +128,17 @@ public class AboutService {
     }
 
     public List<About> findAllByAuto(About about) {
-        return findAllByAuto(about);
+        return aboutDao.findAllByAuto(about);
+    }
+
+    @Transactional
+    public void saveVisits(Long id){
+        About about = aboutDao.getOne(id);
+        about.setVisits(about.getVisits()+1);
+        aboutDao.saveAndFlush(about);
+    }
+
+    public About getOne(Long id){
+        return aboutDao.getOne(id);
     }
 }

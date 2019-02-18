@@ -1,8 +1,11 @@
 package com.wisdom.mng.service;
 
-import com.wisdom.mng.dao.ArticleDao;
 import com.wisdom.mng.dao.BannerDao;
-import com.wisdom.mng.entity.*;
+import com.wisdom.mng.dao.PartnerDao;
+import com.wisdom.mng.entity.Banner;
+import com.wisdom.mng.entity.Partner;
+import com.wisdom.mng.entity.Result;
+import com.wisdom.mng.entity.SysUser;
 import com.wisdom.mng.utils.IOUtils;
 import com.wisdom.mng.utils.ResultUtils;
 import com.wisdom.mng.utils.UpdateTool;
@@ -23,25 +26,25 @@ import java.util.List;
 
 /***
  * @author CHENWEICONG
- * @create 2019-01-22 11:09
+ * @create 2019-01-29 9:28
  * @desc
  */
 @Service
-public class BannerService {
+public class PartnerService {
     @Autowired
-    BannerDao bannerDao;
+    PartnerDao partnerDao;
 
     @Autowired
     private Environment env;
 
-    public Page<Banner> findByAuto(Banner banner, Pageable pageable){
-        return bannerDao.findByAuto(banner,pageable);
+    public Page<Partner> findByAuto(Partner partner, Pageable pageable){
+        return partnerDao.findByAuto(partner,pageable);
     }
 
     @Transactional
-    public void saveOrUpdate(MultipartHttpServletRequest multipartRequest, Banner banner){
+    public void saveOrUpdate(MultipartHttpServletRequest multipartRequest, Partner partner){
         try{
-            String banners = "";
+            String partners = "";
             for (Iterator<String> it = multipartRequest.getFileNames(); it.hasNext();) {
                 String key = (String) it.next();
                 MultipartFile file = multipartRequest.getFile(key);
@@ -49,24 +52,24 @@ public class BannerService {
                     String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String filename = System.currentTimeMillis()+suffix;
                     IOUtils.saveFileFromInputStream(file.getInputStream(),env.getProperty("upload.file.path"),filename,null);
-                    if(key.equals("uploadBanner")){
-                        banners = env.getProperty("upload.url")+filename;
+                    if(key.equals("uploadPartner")){
+                        partners = env.getProperty("upload.url")+filename;
                     }
                 }
             }
-            if(StringUtils.isNotBlank(banners)){
-                banner.setBanner(banners);
+            if(StringUtils.isNotBlank(partners)){
+                partner.setPartner(partners);
             }
-            if(banner.getId() == null){
-                banner.setPostStatus((short) 0);
-                banner.setCreateDate(new Date());
-                banner.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
+            if(partner.getId() == null){
+                partner.setPostStatus((short) 0);
+                partner.setCreateDate(new Date());
+                partner.setCreateUser(new SysUser(UserUtils.getSysUser().getId()));
             }else{
-                Banner b = bannerDao.getOne(banner.getId());
-                banner.setPostStatus(b.getPostStatus());
-                UpdateTool.copyNullProperties(b, banner);
+                Partner p = partnerDao.getOne(partner.getId());
+                partner.setPostStatus(p.getPostStatus());
+                UpdateTool.copyNullProperties(p, partner);
             }
-            bannerDao.saveAndFlush(banner);
+            partnerDao.saveAndFlush(partner);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -75,27 +78,23 @@ public class BannerService {
     @Transactional
     public void delete(List<Long> ids) {
         for (Long id:ids) {
-            bannerDao.deleteById(id);
+            partnerDao.deleteById(id);
         }
     }
 
     @Transactional
-    public Result post(Short postStatus, Long bannerId) {
-        Banner banner = bannerDao.getOne(bannerId);
+    public Result post(Short postStatus, Long partnerId) {
+        Partner partner = partnerDao.getOne(partnerId);
         if(postStatus == 1){
-            List<Banner> byPostStatus = bannerDao.findByPostStatus(postStatus);
-            if(byPostStatus != null && byPostStatus.size() >= 5){
-                return ResultUtils.DATA("只能发布五张轮播图",ResultUtils.RESULT_ERROR_CODE,null);
-            }
-            banner.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
-            banner.setPostDate(new Date());
+            partner.setPostUser(new SysUser(UserUtils.getSysUser().getId()));
+            partner.setPostDate(new Date());
         }
-        banner.setPostStatus(postStatus);
-        bannerDao.saveAndFlush(banner);
+        partner.setPostStatus(postStatus);
+        partnerDao.saveAndFlush(partner);
         return ResultUtils.SUCCESS();
     }
 
-    public List<Banner> findByPostStatus(Short postStatus){
-        return bannerDao.findByPostStatus(postStatus);
+    public List<Partner> findByPostStatus(Short postStatus){
+        return partnerDao.findByPostStatus(postStatus);
     }
 }

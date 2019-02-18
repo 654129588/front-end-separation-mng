@@ -44,6 +44,10 @@ public class About {
     @ApiModelProperty(value = "缩略图")
     private String banner;//缩略图
 
+    @Column(name="video")
+    @ApiModelProperty(value = "视频")
+    private String video;//视频
+
     @Column(name="file")
     @ApiModelProperty(value = "附件")
     private String file;//附件
@@ -85,6 +89,37 @@ public class About {
     @Transient
     @ApiModelProperty(value = "创建结束时间区间")
     private Date endcreateDate;//创建时间
+
+    @Transient
+    private String identification;
+
+    @Column(name="visits")
+    @ApiModelProperty(value = "访问数")
+    private Integer visits;
+
+    public Integer getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Integer visits) {
+        this.visits = visits;
+    }
+
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
 
     public Long getId() {
         return id;

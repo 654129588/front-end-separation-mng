@@ -90,6 +90,29 @@ public class Product {
     @ApiModelProperty(value = "创建结束时间区间")
     private Date endcreateDate;//创建时间
 
+    @Transient
+    private String identification;
+
+    @Column(name="visits")
+    @ApiModelProperty(value = "访问数")
+    private Integer visits;
+
+    public Integer getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Integer visits) {
+        this.visits = visits;
+    }
+
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
     public Long getId() {
         return id;
     }

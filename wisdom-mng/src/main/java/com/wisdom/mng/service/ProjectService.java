@@ -64,6 +64,7 @@ public class ProjectService {
                 project.setFile(files);
             }
             if(project.getId() == null){
+                project.setVisits(0);
                 project.setPostStatus((short) 0);
                 project.setPushStatus((short) 0);
                 project.setCreateDate(new Date());
@@ -109,5 +110,16 @@ public class ProjectService {
 
     public List<Project> findAllByAuto(Project project) {
         return projectDao.findAllByAuto(project);
+    }
+
+    @Transactional
+    public void saveVisits(Long id){
+        Project project = projectDao.getOne(id);
+        project.setVisits(project.getVisits()+1);
+        projectDao.saveAndFlush(project);
+    }
+
+    public Project getOne(Long id){
+        return projectDao.getOne(id);
     }
 }

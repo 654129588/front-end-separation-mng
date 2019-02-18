@@ -63,6 +63,7 @@ public class ArticleService {
                 article.setFile(files);
             }
             if(article.getId() == null){
+                article.setVisits(0);
                 article.setPostStatus((short) 0);
                 article.setPushStatus((short) 0);
                 article.setCreateDate(new Date());
@@ -100,5 +101,16 @@ public class ArticleService {
 
     public List<Article> findAllByAuto(Article article) {
         return articleDao.findAllByAuto(article);
+    }
+
+    @Transactional
+    public void saveVisits(Long id){
+        Article article = articleDao.getOne(id);
+        article.setVisits(article.getVisits()+1);
+        articleDao.saveAndFlush(article);
+    }
+
+    public Article getOne(Long id){
+        return articleDao.getOne(id);
     }
 }

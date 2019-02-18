@@ -60,7 +60,8 @@ public class AboutController {
             @ApiImplicitParam(name = "content", value = "文章内容", required = true, dataType = "String"),
             @ApiImplicitParam(name = "categoryId", value = "栏目Id", required = true, dataType = "Long"),
             @ApiImplicitParam(name = "uploadBanner", value = "文章缩略图", required = true, dataType = "File"),
-            @ApiImplicitParam(name = "uploadFile", value = "文章附件", required = true, dataType = "File")
+            @ApiImplicitParam(name = "uploadFile", value = "文章附件", required = true, dataType = "File"),
+            @ApiImplicitParam(name = "uploadVideo", value = "文章视频", required = true, dataType = "File")
     })
     public Result saveOrUpdate(MultipartHttpServletRequest multipartRequest, About about, Long categoryId) throws Exception{
         if(categoryId == null){

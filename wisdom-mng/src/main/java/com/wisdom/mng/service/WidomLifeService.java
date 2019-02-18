@@ -64,6 +64,7 @@ public class WidomLifeService {
                 wisdomLife.setFile(files);
             }
             if(wisdomLife.getId() == null){
+                wisdomLife.setVisits(0);
                 wisdomLife.setPostStatus((short) 0);
                 wisdomLife.setPushStatus((short) 0);
                 wisdomLife.setCreateDate(new Date());
@@ -109,5 +110,16 @@ public class WidomLifeService {
 
     public List<WisdomLife> findAllByAuto(WisdomLife wisdomLife) {
         return wisdomLifeDao.findAllByAuto(wisdomLife);
+    }
+
+    @Transactional
+    public void saveVisits(Long id){
+        WisdomLife wisdomLife = wisdomLifeDao.getOne(id);
+        wisdomLife.setVisits(wisdomLife.getVisits()+1);
+        wisdomLifeDao.saveAndFlush(wisdomLife);
+    }
+
+    public WisdomLife getOne(Long id){
+        return wisdomLifeDao.getOne(id);
     }
 }

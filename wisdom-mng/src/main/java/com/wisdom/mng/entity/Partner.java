@@ -2,51 +2,33 @@ package com.wisdom.mng.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.Date;
 
 /***
  * @author CHENWEICONG
- * @create 2019-01-23 10:26
- * @desc 项目
+ * @create 2019-01-29 9:23
+ * @desc 合作伙伴
  */
 @Entity
 @ApiModel
-public class Project {
+public class Partner {
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(name="title")
-    @ApiModelProperty(value = "标题")
-    private String title;//标题
+    @Column(name="partner")
+    @ApiModelProperty(value = "图片")
+    private String partner;
 
-    @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
-    @NotFound(action= NotFoundAction.IGNORE)
-    private Category category;//栏目
+    @Column(name="orders")
+    @ApiModelProperty(value = "图片排序")
+    private Short orders;
 
-    @Column(name="push_status")
-    @ApiModelProperty(value = "推送首页")
-    private Short pushStatus;//推送首页
-
-    @Column(name="excerpt")
-    @ApiModelProperty(value = "摘要")
-    private String excerpt;//摘要
-
-    @Column(name="content",columnDefinition="longtext")
-    @ApiModelProperty(value = "内容")
-    private String content;//内容
-
-    @Column(name="banner")
-    @ApiModelProperty(value = "缩略图")
-    private String banner;//缩略图
-
-    @Column(name="file")
-    @ApiModelProperty(value = "附件")
-    private String file;//附件
+    @Column(name="url")
+    @ApiModelProperty(value = "图片链接")
+    private String url;//图片链接
 
     @Column(name="post_status")
     @ApiModelProperty(value = "发布状态")
@@ -86,29 +68,6 @@ public class Project {
     @ApiModelProperty(value = "创建结束时间区间")
     private Date endcreateDate;//创建时间
 
-    @Transient
-    private String identification;
-
-    @Column(name="visits")
-    @ApiModelProperty(value = "访问数")
-    private Integer visits;
-
-    public Integer getVisits() {
-        return visits;
-    }
-
-    public void setVisits(Integer visits) {
-        this.visits = visits;
-    }
-
-    public String getIdentification() {
-        return identification;
-    }
-
-    public void setIdentification(String identification) {
-        this.identification = identification;
-    }
-
     public Long getId() {
         return id;
     }
@@ -117,44 +76,28 @@ public class Project {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getPartner() {
+        return partner;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPartner(String partner) {
+        this.partner = partner;
     }
 
-    public String getExcerpt() {
-        return excerpt;
+    public Short getOrders() {
+        return orders;
     }
 
-    public void setExcerpt(String excerpt) {
-        this.excerpt = excerpt;
+    public void setOrders(Short orders) {
+        this.orders = orders;
     }
 
-    public String getContent() {
-        return content;
+    public String getUrl() {
+        return url;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getBanner() {
-        return banner;
-    }
-
-    public void setBanner(String banner) {
-        this.banner = banner;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Short getPostStatus() {
@@ -227,21 +170,5 @@ public class Project {
 
     public void setEndcreateDate(Date endcreateDate) {
         this.endcreateDate = endcreateDate;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Short getPushStatus() {
-        return pushStatus;
-    }
-
-    public void setPushStatus(Short pushStatus) {
-        this.pushStatus = pushStatus;
     }
 }

@@ -66,6 +66,7 @@ public class ProductService {
                 product.setMachine(machine);
             }
             if(product.getId() == null){
+                product.setVisits(0);
                 product.setPostStatus((short) 0);
                 product.setPushStatus((short) 0);
                 product.setCreateDate(new Date());
@@ -123,5 +124,16 @@ public class ProductService {
 
     public List<Product> findAllByAuto(Product product){
         return productDao.findAllByAuto(product);
+    }
+
+    @Transactional
+    public void saveVisits(Long id){
+        Product product = productDao.getOne(id);
+        product.setVisits(product.getVisits()+1);
+        productDao.saveAndFlush(product);
+    }
+
+    public Product getOne(Long id){
+        return productDao.getOne(id);
     }
 }
